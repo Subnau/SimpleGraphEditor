@@ -1,0 +1,77 @@
+﻿<Window x:Class="SimpleGraphEditor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:command="http://www.galasoft.ch/mvvmlight"
+        Title="Simple Graph Editor" Height="500" Width="800"
+        DataContext="{Binding Main, Source={StaticResource ResourceKey=Locator}}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <ToolBar Grid.Row="0">
+            <Button Command="{Binding NewImageCommand}" IsEnabled="{Binding IsNotTaskRunning}">New</Button>
+            <Button Command="{Binding OpenFileCommand}" IsEnabled="{Binding IsNotTaskRunning}">Open</Button>
+            <Button Command="{Binding SaveFileCommand}" IsEnabled="{Binding IsNotTaskRunning}">Save</Button>
+            <Separator></Separator>
+            <ComboBox DisplayMemberPath="DisplayName" ItemsSource="{Binding Primitives}" SelectedItem="{Binding SelectedPrimitive}" IsEnabled="{Binding IsNotTaskRunning}"></ComboBox>
+            <Separator></Separator>
+            <Label>Color</Label>
+            <ComboBox ItemsSource="{Binding AvailiableColors}" SelectedItem="{Binding ForeColor}" SelectedIndex="0" IsEnabled="{Binding IsNotTaskRunning}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <Rectangle Width="100" Height="15" Fill="{Binding}"></Rectangle>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <Separator></Separator>
+            <Label>BackGround</Label>
+            <ComboBox ItemsSource="{Binding AvailiableColors}" SelectedItem="{Binding BackColor}" SelectedIndex="2" IsEnabled="{Binding IsNotTaskRunning}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <Rectangle Width="100" Height="15" Fill="{Binding}"></Rectangle>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <Separator></Separator>
+            <Button Command="{Binding LongInvertCommand}" IsEnabled="{Binding IsNotTaskRunning}">Invert</Button>
+        </ToolBar>
+        <StatusBar Grid.Row="2">
+            <Button IsEnabled="{Binding IsTaskRunning}" Command="{Binding CancelCommand}" Content="Cancel"  Margin="40,0,0,0"/>
+            <ProgressBar Value="{Binding ProgressValueInPercentages}" Width="100" />
+            <Label Content="{Binding TaskTimeText}" />
+        </StatusBar>
+        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" Margin="0,1,0,31" Grid.RowSpan="2">
+            <Canvas Width="{Binding ActualWidth,ElementName=image}" Height="{Binding Path=ActualHeight,ElementName=image}"  HorizontalAlignment="Left" VerticalAlignment="Top">
+                <!--<Canvas.Background>
+                    <SolidColorBrush Color="White" Opacity="0"/>
+                </Canvas.Background>-->
+                <Border BorderBrush="Black" BorderThickness="1">
+                    <Image x:Name="image" Source="{Binding BitmapImage}" HorizontalAlignment="Left" VerticalAlignment="Top" SnapsToDevicePixels="False" >
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="MouseMove">
+                                <command:EventToCommand Command="{Binding MouseMoveCommand}" PassEventArgsToCommand="True" />
+                            </i:EventTrigger>
+                            <i:EventTrigger EventName="MouseDown" >
+                                <command:EventToCommand Command="{Binding MouseDownCommand}" PassEventArgsToCommand="True"/>
+                            </i:EventTrigger>
+                            <i:EventTrigger EventName="MouseUp" >
+                                <command:EventToCommand Command="{Binding MouseUpCommand}" PassEventArgsToCommand="True"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </Image>
+                </Border>
+                <Line X1="{Binding LineX1}" Y1="{Binding LineY1}" X2="{Binding LineX2}" Y2="{Binding LineY2}" Stroke="{Binding ForeColor}" Visibility="{Binding LineVisibility}" IsHitTestVisible="False"/>
+                <Line X1="{Binding LineX1}" Y1="{Binding LineY1}" X2="{Binding LineX1}" Y2="{Binding LineY2}" Stroke="{Binding ForeColor}" Visibility="{Binding RectangleVisibility}" IsHitTestVisible="False" />
+                <Line X1="{Binding LineX1}" Y1="{Binding LineY1}" X2="{Binding LineX2}" Y2="{Binding LineY1}" Stroke="{Binding ForeColor}" Visibility="{Binding RectangleVisibility}" IsHitTestVisible="False" />
+                <Line X1="{Binding LineX2}" Y1="{Binding LineY1}" X2="{Binding LineX2}" Y2="{Binding LineY2}" Stroke="{Binding ForeColor}" Visibility="{Binding RectangleVisibility}" IsHitTestVisible="False" />
+                <Line X1="{Binding LineX1}" Y1="{Binding LineY2}" X2="{Binding LineX2}" Y2="{Binding LineY2}" Stroke="{Binding ForeColor}" Visibility="{Binding RectangleVisibility}" IsHitTestVisible="False" />
+                <Polyline Points="{Binding Path=Points}" Stroke="{Binding ForeColor}" Visibility="{Binding PolylineVisibility}" IsHitTestVisible="False"></Polyline>
+                <Ellipse Canvas.Left="{Binding PrimitiveLeft}" Canvas.Top="{Binding PrimitiveTop}" Width="{Binding PrimitiveWidth}"  Height="{Binding PrimitiveHeight}" 
+                         Stroke="{Binding ForeColor}" Visibility="{Binding EllipseVisibility}" IsHitTestVisible="False"/>
+            </Canvas>
+        </ScrollViewer>
+    </Grid>
+</Window>
